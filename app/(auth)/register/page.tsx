@@ -63,6 +63,7 @@ export default function Register() {
             setFormData({ ...formData, password: e.target.value })
           }
         />
+        {error.password && <p className="text-white">{error.password}</p>}
         <button type="submit">Register</button>
       </form>
     </div>
