@@ -1,8 +1,28 @@
 "use client";
 
+// in lib
 import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { AppContext } from "@/context/AppContext";
+
+// ex lib
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+// ui lib
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 // Interfaces
 interface FormData {
@@ -15,14 +35,26 @@ interface Errors {
   password?: string;
 }
 
+const formSchema = z.object({
+  username: z.string().min(6, {
+    message: "Username must be at least 6 characters.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+});
+
 export default function Register() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+
   const router = useRouter();
   const [error, setError] = useState<Errors>({});
-
-  const [formData, setFormData] = useState<FormData>({
-    username: "",
-    password: "",
-  });
 
   // Access AppContext
   const context = useContext(AppContext);
@@ -33,60 +65,73 @@ export default function Register() {
   const { setToken } = context;
 
   // Handle registration
-  async function handleRegister(e: React.FormEvent) {
-    e.preventDefault();
-
+  async function handleRegister(data: FormData) {
     const res = await fetch("http://127.0.0.1:8000/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(data),
     });
 
-    const data = await res.json();
+    const result = await res.json();
 
-    if (data.errors) {
-      setError(data.errors);
+    if (result.errors) {
+      setError(result.errors);
     } else {
-      localStorage.setItem("token", data.token);
-      setToken(data.token);
+      localStorage.setItem("token", result.token);
+      setToken(result.token);
       router.push("/");
 
-      console.log(data);
+      console.log(result);
     }
   }
 
   return (
-    <div>
-      <h1>Register Account</h1>
-
-      <form onSubmit={handleRegister}>
-        <input
-          type="text"
-          className="text-black"
-          placeholder="Username"
-          value={formData.username}
-          onChange={(e) =>
-            setFormData({ ...formData, username: e.target.value })
-          }
-        />
-        {error.username && <p className="text-white">{error.username}</p>}
-
-        <input
-          type="password"
-          placeholder="Password"
-          className="text-black"
-          value={formData.password}
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
-        />
-        {error.password && <p className="text-white">{error.password}</p>}
-
-        <button type="submit">Register</button>
-      </form>
+    <div className="flex min-h-screen items-center justify-center">
+      <Card className="w-full max-w-md space-y-6 rounded-md p-8">
+        <h1 className="text-center text-2xl font-bold">Register Account</h1>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleRegister)}
+            className="space-y-8"
+          >
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="shadcn" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    This is your public display name.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="******" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full">
+              Submit
+            </Button>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }
