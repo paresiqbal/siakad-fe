@@ -10,12 +10,39 @@ interface AppProviderProps {
   children: ReactNode;
 }
 
-// Create the context with the updated type
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export default function AppProvider({ children }: AppProviderProps) {
   const [token, setToken] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [user, setUser] = useState({});
+
+  async function getUser() {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/user", {
+        headers: {
+          Authorization: "", // Use the token for authorization
+          Accept: "application/json",
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json(); // Await the response before parsing
+        setUser(data); // Set the user data
+        console.log(data); // Debug user data
+      } else {
+        console.error("Failed to fetch user data");
+      }
+    } catch (error) {
+      console.error("Error fetching user data", error);
+    }
+  }
+
+  useEffect(() => {
+    if (token) {
+      getUser();
+    }
+  }, [token]);
 
   // Use useEffect to safely access localStorage on the client side
   useEffect(() => {

@@ -30,7 +30,7 @@ export default function Register() {
     throw new Error("AppContext must be used within an AppProvider");
   }
 
-  const { token, setToken } = context;
+  const { setToken } = context;
 
   // Handle registration
   async function handleRegister(e: React.FormEvent) {
@@ -52,7 +52,7 @@ export default function Register() {
     } else {
       localStorage.setItem("token", data.token);
       setToken(data.token);
-      // router.push("/");
+      router.push("/");
 
       console.log(data);
     }
@@ -60,7 +60,7 @@ export default function Register() {
 
   return (
     <div>
-      <h1>Register Account {token}</h1>
+      <h1>Register Account</h1>
 
       <form onSubmit={handleRegister}>
         <input
