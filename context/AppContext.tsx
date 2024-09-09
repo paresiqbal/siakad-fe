@@ -21,15 +21,15 @@ export default function AppProvider({ children }: AppProviderProps) {
     try {
       const res = await fetch("http://127.0.0.1:8000/api/user", {
         headers: {
-          Authorization: "", // Use the token for authorization
+          Authorization: "",
           Accept: "application/json",
         },
       });
 
       if (res.ok) {
-        const data = await res.json(); // Await the response before parsing
-        setUser(data); // Set the user data
-        console.log(data); // Debug user data
+        const data = await res.json();
+        setUser(data);
+        console.log(data);
       } else {
         console.error("Failed to fetch user data");
       }
@@ -44,17 +44,14 @@ export default function AppProvider({ children }: AppProviderProps) {
     }
   }, [token]);
 
-  // Use useEffect to safely access localStorage on the client side
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
       setToken(storedToken);
     }
-    setIsMounted(true); // Indicate that the component is now mounted
-  }, []); // Run once on component mount
-
+    setIsMounted(true);
+  }, []);
   if (!isMounted) {
-    // During SSR and before the component mounts on the client, return null or a loader
     return null;
   }
 
