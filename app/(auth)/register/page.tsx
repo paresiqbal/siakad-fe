@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AppContext } from "@/context/AppContext";
 
-// interface
+// Interfaces
 interface FormData {
   username: string;
   password: string;
@@ -16,13 +17,22 @@ interface Errors {
 
 export default function Register() {
   const router = useRouter();
+  const [error, setError] = useState<Errors>({});
+
   const [formData, setFormData] = useState<FormData>({
     username: "",
     password: "",
   });
 
-  const [error, setError] = useState<Errors>({});
+  // Access AppContext
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error("AppContext must be used within an AppProvider");
+  }
 
+  const { setToken } = context;
+
+  // Handle registration
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
 
@@ -41,7 +51,9 @@ export default function Register() {
       setError(data.errors);
     } else {
       localStorage.setItem("token", data.token);
-      router.push("/");
+      setToken(data.token);
+      // router.push("/");
+
       console.log(data);
     }
   }
@@ -60,6 +72,7 @@ export default function Register() {
           }
         />
         {error.username && <p className="text-white">{error.username}</p>}
+
         <input
           type="password"
           placeholder="Password"
@@ -70,6 +83,7 @@ export default function Register() {
           }
         />
         {error.password && <p className="text-white">{error.password}</p>}
+
         <button type="submit">Register</button>
       </form>
     </div>
