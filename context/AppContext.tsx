@@ -4,6 +4,12 @@ import { createContext, ReactNode, useState, useEffect } from "react";
 interface AppContextType {
   token: string | null;
   setToken: (token: string | null) => void;
+  user: User | null;
+}
+
+interface User {
+  id: number;
+  username: string;
 }
 
 interface AppProviderProps {
@@ -15,7 +21,7 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 export default function AppProvider({ children }: AppProviderProps) {
   const [token, setToken] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState<User | null>(null);
 
   async function getUser() {
     try {
@@ -56,7 +62,7 @@ export default function AppProvider({ children }: AppProviderProps) {
   }
 
   return (
-    <AppContext.Provider value={{ token, setToken }}>
+    <AppContext.Provider value={{ token, setToken, user }}>
       {children}
     </AppContext.Provider>
   );
