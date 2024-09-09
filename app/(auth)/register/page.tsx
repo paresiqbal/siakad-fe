@@ -48,6 +48,7 @@ export default function Register() {
       <form onSubmit={handleRegister}>
         <input
           type="text"
+          className="text-black"
           placeholder="Username"
           value={formData.username}
           onChange={(e) =>
@@ -58,6 +59,7 @@ export default function Register() {
         <input
           type="password"
           placeholder="Password"
+          className="text-black"
           value={formData.password}
           onChange={(e) =>
             setFormData({ ...formData, password: e.target.value })
