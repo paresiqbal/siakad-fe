@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 // interface
 interface FormData {
@@ -14,6 +15,7 @@ interface Errors {
 }
 
 export default function Register() {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     username: "",
     password: "",
@@ -38,6 +40,8 @@ export default function Register() {
     if (data.errors) {
       setError(data.errors);
     } else {
+      localStorage.setItem("token", data.token);
+      router.push("/");
       console.log(data);
     }
   }
