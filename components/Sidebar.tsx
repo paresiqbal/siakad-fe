@@ -32,7 +32,7 @@ export function Sidebar() {
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "hidden transition-all duration-300 md:flex",
+          "hidden transition-all duration-200 md:flex",
           isShrunk ? "w-16" : "w-64",
         )}
       >
