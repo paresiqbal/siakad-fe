@@ -1,7 +1,7 @@
 "use client";
 
 // in lib
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { AppContext } from "@/context/AppContext";
@@ -62,7 +62,7 @@ export default function Register() {
     throw new Error("AppContext must be used within an AppProvider");
   }
 
-  const { setToken } = context;
+  const { token, setToken } = context;
 
   // Handle registration
   async function handleRegister(data: FormData) {
@@ -87,6 +87,12 @@ export default function Register() {
       console.log(result);
     }
   }
+
+  useEffect(() => {
+    if (token) {
+      router.push("/");
+    }
+  }, [token, router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">
