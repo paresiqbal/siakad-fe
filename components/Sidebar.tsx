@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -23,7 +21,7 @@ const menuItems = [
   { icon: HelpCircle, label: "Help" },
 ];
 
-export function Sidebar() {
+export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isShrunk, setIsShrunk] = useState(false);
 
@@ -32,7 +30,7 @@ export function Sidebar() {
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "hidden transition-all duration-200 md:flex",
+          "hidden transition-all duration-300 ease-in-out md:flex",
           isShrunk ? "w-16" : "w-64",
         )}
       >
@@ -55,6 +53,12 @@ export function Sidebar() {
           <SidebarContent isShrunk={false} setIsShrunk={() => {}} />
         </SheetContent>
       </Sheet>
+
+      {/* Main Content */}
+      <main className="flex-1 p-4">
+        <h1 className="mb-4 text-2xl font-bold">Main Content</h1>
+        <p>Your main content goes here.</p>
+      </main>
     </div>
   );
 }
@@ -63,17 +67,24 @@ function SidebarContent({ isShrunk, setIsShrunk }: any) {
   return (
     <div
       className={cn(
-        "flex h-full flex-col border-r bg-gray-100/40 dark:bg-gray-800/40",
+        "flex h-full flex-col border-r bg-gray-100/40 transition-all duration-300 ease-in-out dark:bg-gray-800/40",
         isShrunk ? "w-16" : "w-64",
       )}
     >
       <div className="flex h-14 items-center justify-between border-b px-4">
-        {!isShrunk && <h2 className="text-lg font-semibold">Sidebar</h2>}
+        {!isShrunk && (
+          <h2 className="text-lg font-semibold transition-opacity duration-300 ease-in-out">
+            Sidebar
+          </h2>
+        )}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsShrunk(!isShrunk)}
-          className={cn("ml-auto", isShrunk && "ml-0")}
+          className={cn(
+            "transition-all duration-300 ease-in-out",
+            isShrunk ? "ml-0" : "ml-auto",
+          )}
         >
           {isShrunk ? (
             <ChevronRight className="h-4 w-4" />
@@ -84,45 +95,63 @@ function SidebarContent({ isShrunk, setIsShrunk }: any) {
       </div>
       <ScrollArea className="flex-1">
         <nav
-          className={cn("flex flex-col gap-2 p-2", isShrunk && "items-center")}
+          className={cn(
+            "flex flex-col gap-2 p-2 transition-all duration-300 ease-in-out",
+            isShrunk && "items-center",
+          )}
         >
           {menuItems.map((item, index) => (
             <Button
               key={index}
               variant="ghost"
               className={cn(
-                "justify-start gap-2",
+                "justify-start gap-2 transition-all duration-300 ease-in-out",
                 isShrunk ? "h-12 w-12 justify-center p-0" : "w-full",
               )}
               title={isShrunk ? item.label : undefined}
             >
-              <item.icon className="h-4 w-4" />
-              {!isShrunk && item.label}
+              <item.icon className="h-4 w-4 flex-shrink-0" />
+              {!isShrunk && (
+                <span className="transition-opacity duration-300 ease-in-out">
+                  {item.label}
+                </span>
+              )}
             </Button>
           ))}
         </nav>
       </ScrollArea>
       <div
-        className={cn("border-t p-4", isShrunk && "flex flex-col items-center")}
+        className={cn(
+          "border-t p-4 transition-all duration-300 ease-in-out",
+          isShrunk && "flex flex-col items-center",
+        )}
       >
         <div
           className={cn(
-            "mb-2 flex items-center gap-2",
+            "mb-2 flex items-center gap-2 transition-all duration-300 ease-in-out",
             isShrunk && "justify-center",
           )}
         >
           <div className="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-600" />
-          {!isShrunk && <span className="text-sm font-medium">John Doe</span>}
+          {!isShrunk && (
+            <span className="text-sm font-medium transition-opacity duration-300 ease-in-out">
+              John Doe
+            </span>
+          )}
         </div>
         <Button
           variant="ghost"
           className={cn(
-            "w-full justify-start gap-2",
+            "w-full justify-start gap-2 transition-all duration-300 ease-in-out",
             isShrunk && "h-12 w-12 justify-center p-0",
           )}
         >
-          <LogOut className="h-4 w-4" />
-          {!isShrunk && "Logout"}
+          <LogOut className="h-4 w-4 flex-shrink-0" />
+          {!isShrunk && (
+            <span className="transition-opacity duration-300 ease-in-out">
+              Logout
+            </span>
+          )}
         </Button>
       </div>
     </div>
