@@ -23,28 +23,28 @@ export default function AppProvider({ children }: AppProviderProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  async function getUser() {
-    try {
-      const res = await fetch("http://127.0.0.1:8000/api/user", {
-        headers: {
-          Authorization: "",
-          Accept: "application/json",
-        },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data);
-        console.log(data);
-      } else {
-        console.error("Failed to fetch user data");
-      }
-    } catch (error) {
-      console.error("Error fetching user data", error);
-    }
-  }
-
   useEffect(() => {
+    async function getUser() {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/user", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Use the token from state
+            Accept: "application/json",
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+          console.log(data);
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data", error);
+      }
+    }
+
     if (token) {
       getUser();
     }
@@ -57,6 +57,7 @@ export default function AppProvider({ children }: AppProviderProps) {
     }
     setIsMounted(true);
   }, []);
+
   if (!isMounted) {
     return null;
   }
