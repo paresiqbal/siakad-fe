@@ -9,7 +9,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="flex">
       <Sidebar />
       <div className="h-full">{children}</div>
     </div>
