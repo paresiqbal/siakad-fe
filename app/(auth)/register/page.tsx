@@ -84,7 +84,7 @@ export default function Register() {
       setToken(result.token);
       router.push("/");
 
-      console.log(result);
+      // console.log(result);
     }
   }
 
