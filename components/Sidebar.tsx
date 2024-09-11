@@ -53,12 +53,6 @@ export default function Sidebar() {
           <SidebarContent isShrunk={false} setIsShrunk={() => {}} />
         </SheetContent>
       </Sheet>
-
-      {/* Main Content */}
-      <main className="flex-1 p-4">
-        <h1 className="mb-4 text-2xl font-bold">Main Content</h1>
-        <p>Your main content goes here.</p>
-      </main>
     </div>
   );
 }
