@@ -61,14 +61,14 @@ function SidebarContent({ isShrunk, setIsShrunk }: any) {
   return (
     <div
       className={cn(
-        "flex h-full flex-col border-r bg-white transition-all duration-300 ease-in-out dark:bg-gray-800/40",
+        "flex h-full flex-col border-r bg-white transition-all duration-300 ease-in-out",
         isShrunk ? "w-16" : "w-64",
       )}
     >
       <div className="flex h-14 items-center justify-between border-b px-4">
         {!isShrunk && (
           <h2 className="text-lg font-semibold transition-opacity duration-300 ease-in-out">
-            Sidebar
+            SMK 1 R
           </h2>
         )}
         <Button
