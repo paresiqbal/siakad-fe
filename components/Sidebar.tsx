@@ -67,7 +67,7 @@ function SidebarContent({ isShrunk, setIsShrunk }: any) {
   return (
     <div
       className={cn(
-        "flex h-full flex-col border-r bg-gray-100/40 transition-all duration-300 ease-in-out dark:bg-gray-800/40",
+        "flex h-full flex-col border-r bg-white transition-all duration-300 ease-in-out dark:bg-gray-800/40",
         isShrunk ? "w-16" : "w-64",
       )}
     >
