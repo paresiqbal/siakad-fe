@@ -28,7 +28,7 @@ export default function AppProvider({ children }: AppProviderProps) {
       try {
         const res = await fetch("http://127.0.0.1:8000/api/user", {
           headers: {
-            Authorization: `Bearer ${token}`, // Use the token from state
+            Authorization: `Bearer ${token}`,
             Accept: "application/json",
           },
         });
@@ -36,7 +36,7 @@ export default function AppProvider({ children }: AppProviderProps) {
         if (res.ok) {
           const data = await res.json();
           setUser(data);
-          console.log(data);
+          // console.log(data);
         } else {
           console.error("Failed to fetch user data");
         }
