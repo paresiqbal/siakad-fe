@@ -1,4 +1,9 @@
+// next
 import { useContext, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AppContext } from "@/context/AppContext";
+
+// ui lib
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -13,8 +18,6 @@ import {
   ChevronRight,
   LogOut,
 } from "lucide-react";
-import { AppContext } from "@/context/AppContext"; // Import AppContext
-import { useRouter } from "next/navigation"; // For handling navigation
 
 const menuItems = [
   { icon: Home, label: "Home" },
@@ -25,16 +28,15 @@ const menuItems = [
 
 export default function Sidebar() {
   const [isShrunk, setIsShrunk] = useState(false);
-  const { user, setToken, setUser }: any = useContext(AppContext); // Access setUser here
+  const { user, setToken, setUser }: any = useContext(AppContext);
 
   const router = useRouter();
 
   const handleLogout = () => {
-    // Clear token and user from localStorage and context
     localStorage.removeItem("token");
     setToken(null);
-    setUser(null); // Reset user on logout
-    router.push("/login"); // Redirect to login page
+    setUser(null);
+    router.push("/login");
   };
 
   return (
