@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -13,6 +13,8 @@ import {
   ChevronRight,
   LogOut,
 } from "lucide-react";
+import { AppContext } from "@/context/AppContext"; // Import AppContext
+import { useRouter } from "next/navigation"; // For handling navigation
 
 const menuItems = [
   { icon: Home, label: "Home" },
@@ -22,8 +24,18 @@ const menuItems = [
 ];
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(false);
   const [isShrunk, setIsShrunk] = useState(false);
+  const { user, setToken, setUser }: any = useContext(AppContext); // Access setUser here
+
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Clear token and user from localStorage and context
+    localStorage.removeItem("token");
+    setToken(null);
+    setUser(null); // Reset user on logout
+    router.push("/login"); // Redirect to login page
+  };
 
   return (
     <div className="flex h-screen">
@@ -34,11 +46,16 @@ export default function Sidebar() {
           isShrunk ? "w-16" : "w-64",
         )}
       >
-        <SidebarContent isShrunk={isShrunk} setIsShrunk={setIsShrunk} />
+        <SidebarContent
+          isShrunk={isShrunk}
+          setIsShrunk={setIsShrunk}
+          handleLogout={handleLogout}
+          user={user}
+        />
       </aside>
 
       {/* Mobile Sidebar */}
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <Sheet>
         <SheetTrigger asChild>
           <Button
             variant="outline"
@@ -50,14 +67,19 @@ export default function Sidebar() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
-          <SidebarContent isShrunk={false} setIsShrunk={() => {}} />
+          <SidebarContent
+            isShrunk={false}
+            setIsShrunk={() => {}}
+            handleLogout={handleLogout}
+            user={user}
+          />
         </SheetContent>
       </Sheet>
     </div>
   );
 }
 
-function SidebarContent({ isShrunk, setIsShrunk }: any) {
+function SidebarContent({ isShrunk, setIsShrunk, handleLogout, user }: any) {
   return (
     <div
       className={cn(
@@ -127,9 +149,9 @@ function SidebarContent({ isShrunk, setIsShrunk }: any) {
           )}
         >
           <div className="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-600" />
-          {!isShrunk && (
+          {!isShrunk && user && (
             <span className="text-sm font-medium transition-opacity duration-300 ease-in-out">
-              John Doe
+              {user.username}
             </span>
           )}
         </div>
@@ -139,6 +161,7 @@ function SidebarContent({ isShrunk, setIsShrunk }: any) {
             "w-full justify-start gap-2 transition-all duration-300 ease-in-out",
             isShrunk && "h-12 w-12 justify-center p-0",
           )}
+          onClick={handleLogout}
         >
           <LogOut className="h-4 w-4 flex-shrink-0" />
           {!isShrunk && (
