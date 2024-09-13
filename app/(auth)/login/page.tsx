@@ -4,7 +4,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { cookies } from "next/headers";
 import { AppContext } from "@/context/AppContext";
 
 // ex lib
@@ -81,12 +80,9 @@ export default function Login() {
     if (result.errors) {
       setError(result.errors);
     } else {
-      cookies().set("token", result.token, {
-        maxAge: 7 * 24 * 60 * 60,
-        path: "/",
-      });
-
-      router.push("/dashboard");
+      localStorage.setItem("token", result.token);
+      setToken(result.token);
+      router.push("/");
     }
   }
 
