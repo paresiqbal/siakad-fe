@@ -82,7 +82,7 @@ export default function Login() {
     } else {
       localStorage.setItem("token", result.token);
       setToken(result.token);
-      router.push("/");
+      router.push("/dashboard");
     }
   }
 
