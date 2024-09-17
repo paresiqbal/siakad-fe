@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 // Interfaces
 interface FormData {
@@ -55,6 +55,13 @@ export default function Login() {
 
   const router = useRouter();
   const [error, setError] = useState<Errors>({});
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
 
   // Handle registration
   async function handleLogin(data: FormData) {

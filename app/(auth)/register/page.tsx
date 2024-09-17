@@ -1,7 +1,7 @@
 "use client";
 
 // in lib
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
@@ -22,16 +22,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { useSession } from "next-auth/react";
 
 // Interfaces
 interface FormData {
   username: string;
   password: string;
-}
-
-interface Errors {
-  username?: string;
-  password?: string;
 }
 
 const formSchema = z.object({
@@ -53,8 +49,14 @@ export default function Register() {
   });
 
   const router = useRouter();
-  const [error, setError] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
 
   // Handle registration
   async function handleRegister(data: FormData) {
@@ -71,7 +73,13 @@ export default function Register() {
     const result = await res.json();
 
     if (result.errors) {
-      setError(result.errors);
+      // Set errors in the form state
+      Object.keys(result.errors).forEach((key) => {
+        form.setError(key as keyof FormData, {
+          type: "server",
+          message: result.errors[key][0],
+        });
+      });
       setLoading(false);
     } else {
       localStorage.setItem("token", result.token);
@@ -118,8 +126,8 @@ export default function Register() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
-              Submit
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Submitting..." : "Submit"}
             </Button>
           </form>
         </Form>
