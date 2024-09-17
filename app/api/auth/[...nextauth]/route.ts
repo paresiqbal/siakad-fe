@@ -63,6 +63,7 @@ const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.username = user.username;
       }
+
       return token;
     },
 
@@ -71,6 +72,7 @@ const authOptions: NextAuthOptions = {
       if ("username" in token) {
         session.user.username = token.username;
       }
+
       return session;
     },
   },

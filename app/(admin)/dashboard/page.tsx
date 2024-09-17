@@ -9,13 +9,15 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status == "unauthenticated") router.push("/login");
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
   }, [router, status]);
 
   return (
     <div>
-      Dashboard
-      <button onClick={() => signOut()}>Signout</button>
+      <div>Dashboard</div>
+      <button onClick={() => signOut()}>Sign Out</button>
     </div>
   );
 }

@@ -85,7 +85,6 @@ export default function Register() {
       const result = await res.json();
 
       if (res.ok) {
-        // Registration successful, redirect to login
         localStorage.setItem("token", result.token);
         router.push("/login");
       } else {
