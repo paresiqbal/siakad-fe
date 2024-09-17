@@ -1,15 +1,16 @@
 "use client";
 
-// in lib
-import { useContext, useEffect, useState } from "react";
+// React and Next.js hooks
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-// ex lib
+// External libraries
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { signIn, useSession } from "next-auth/react";
 
-// ui lib
+// UI components
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,7 +23,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { signIn, useSession } from "next-auth/react";
 
 // Interfaces
 interface FormData {
@@ -30,21 +30,22 @@ interface FormData {
   password: string;
 }
 
-interface Errors {
-  username?: string;
-  password?: string;
-}
-
+// Form schema
 const formSchema = z.object({
   username: z.string().min(4, {
-    message: "Username must be at least 6 characters.",
+    message: "Username must be at least 4 characters.",
   }),
   password: z.string().min(4, {
-    message: "Password must be at least 6 characters.",
+    message: "Password must be at least 4 characters.",
   }),
 });
 
+// Login component
 export default function Login() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,17 +54,14 @@ export default function Login() {
     },
   });
 
-  const router = useRouter();
-  const [error, setError] = useState<Errors>({});
-  const { data: session } = useSession();
-
+  // Redirect to the dashboard if already logged in
   useEffect(() => {
     if (session) {
       router.push("/dashboard");
     }
   }, [session, router]);
 
-  // Handle registration
+  // Handle login
   async function handleLogin(data: FormData) {
     try {
       const res = await signIn("credentials", {
@@ -73,13 +71,14 @@ export default function Login() {
         callbackUrl: "/dashboard",
       });
 
-      if (!res?.error) {
+      if (res && !res.error) {
         router.push("/dashboard");
       } else {
-        console.log(res.error);
+        setError("Invalid username or password. Please try again.");
       }
     } catch (error) {
       console.error(error);
+      setError("An error occurred during login. Please try again.");
     }
   }
 
@@ -96,7 +95,7 @@ export default function Login() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="Your username" {...field} />
                   </FormControl>
                   <FormDescription>
                     This is your public display name.
@@ -118,6 +117,8 @@ export default function Login() {
                 </FormItem>
               )}
             />
+            {/* Display error message */}
+            {error && <div className="text-center text-red-500">{error}</div>}
             <Button type="submit" className="w-full">
               Submit
             </Button>
