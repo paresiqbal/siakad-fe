@@ -117,7 +117,6 @@ export default function Login() {
                 </FormItem>
               )}
             />
-            {/* Display error message */}
             {error && <div className="text-center text-red-500">{error}</div>}
             <Button type="submit" className="w-full">
               Submit

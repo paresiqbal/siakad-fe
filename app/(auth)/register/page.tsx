@@ -1,15 +1,16 @@
 "use client";
 
-// in lib
+// React and Next.js hooks
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useSession } from "next-auth/react";
 
-// ex lib
+// External libraries
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-// ui lib
+// UI components
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,7 +23,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { useSession } from "next-auth/react";
 
 // Interfaces
 interface FormData {
@@ -30,6 +30,12 @@ interface FormData {
   password: string;
 }
 
+interface ServerError {
+  username?: string[];
+  password?: string[];
+}
+
+// Form schema
 const formSchema = z.object({
   username: z.string().min(6, {
     message: "Username must be at least 6 characters.",
@@ -39,7 +45,13 @@ const formSchema = z.object({
   }),
 });
 
+// Register component
 export default function Register() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,10 +60,7 @@ export default function Register() {
     },
   });
 
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
-
+  // Redirect to the dashboard if already logged in
   useEffect(() => {
     if (session) {
       router.push("/dashboard");
@@ -61,29 +70,46 @@ export default function Register() {
   // Handle registration
   async function handleRegister(data: FormData) {
     setLoading(true);
-    const res = await fetch("http://127.0.0.1:8000/api/register", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    setServerError(null);
 
-    const result = await res.json();
-
-    if (result.errors) {
-      // Set errors in the form state
-      Object.keys(result.errors).forEach((key) => {
-        form.setError(key as keyof FormData, {
-          type: "server",
-          message: result.errors[key][0],
-        });
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/register", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-      setLoading(false);
-    } else {
-      localStorage.setItem("token", result.token);
-      router.push("/login");
+
+      const result = await res.json();
+
+      if (res.ok) {
+        // Registration successful, redirect to login
+        localStorage.setItem("token", result.token);
+        router.push("/login");
+      } else {
+        // Handle server-side validation errors
+        if (result.errors) {
+          Object.keys(result.errors).forEach((key) => {
+            form.setError(key as keyof FormData, {
+              type: "server",
+              message: result.errors[key][0], // Display the first error message
+            });
+          });
+        } else {
+          // If there's a general error (e.g., network issue)
+          setServerError(
+            "An error occurred during registration. Please try again.",
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setServerError(
+        "An error occurred during registration. Please try again.",
+      );
+    } finally {
       setLoading(false);
     }
   }
@@ -104,7 +130,7 @@ export default function Register() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="Your username" {...field} />
                   </FormControl>
                   <FormDescription>
                     This is your public display name.
@@ -126,6 +152,10 @@ export default function Register() {
                 </FormItem>
               )}
             />
+            {/* Display server error */}
+            {serverError && (
+              <div className="text-center text-red-500">{serverError}</div>
+            )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Submitting..." : "Submit"}
             </Button>
