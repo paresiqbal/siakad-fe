@@ -58,22 +58,6 @@ export default function Login() {
 
   // Handle registration
   async function handleLogin(data: FormData) {
-    // const res = await fetch("http://127.0.0.1:8000/api/login", {
-    //   method: "POST",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(data),
-    // });
-    // const result = await res.json();
-    // if (result.errors) {
-    //   setError(result.errors);
-    // } else {
-    //   localStorage.setItem("token", result.token);
-    //   router.push("/");
-    // }
-
     try {
       const res = await signIn("credentials", {
         redirect: false,

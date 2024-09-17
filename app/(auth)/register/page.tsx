@@ -54,9 +54,11 @@ export default function Register() {
 
   const router = useRouter();
   const [error, setError] = useState<Errors>({});
+  const [loading, setLoading] = useState(false);
 
   // Handle registration
   async function handleRegister(data: FormData) {
+    setLoading(true);
     const res = await fetch("http://127.0.0.1:8000/api/register", {
       method: "POST",
       headers: {
@@ -70,11 +72,11 @@ export default function Register() {
 
     if (result.errors) {
       setError(result.errors);
+      setLoading(false);
     } else {
       localStorage.setItem("token", result.token);
-      router.push("/");
-
-      // console.log(result);
+      router.push("/login");
+      setLoading(false);
     }
   }
 
