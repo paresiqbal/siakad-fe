@@ -1,7 +1,7 @@
 "use client";
 
 // React and Next.js hooks
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useSession } from "next-auth/react";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { AppContext } from "@/context/AppContext";
 
 // Interfaces
 interface FormData {
@@ -51,6 +52,7 @@ export default function Register() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const { setToken }: any = useContext(AppContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -86,6 +88,7 @@ export default function Register() {
 
       if (res.ok) {
         localStorage.setItem("token", result.token);
+        setToken(result.token);
         router.push("/login");
       } else {
         // Handle server-side validation errors
