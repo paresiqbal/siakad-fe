@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { AppContext } from "@/context/AppContext";
 
 export default function Dashboard() {
+  const { user }: any = useContext(AppContext);
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -16,7 +18,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div>Dashboard</div>
+      <div>{user ? <div>{user.username}</div> : <div>Loading...</div>}</div>
       <button onClick={() => signOut()}>Sign Out</button>
     </div>
   );
