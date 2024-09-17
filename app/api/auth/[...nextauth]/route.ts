@@ -21,12 +21,35 @@ const authOptions: NextAuthOptions = {
           password: string;
         };
 
-        const user: any = { id: 1, name: "Admin", username: "admin" };
+        try {
+          // Replace 'YOUR_API_URL' with your actual API endpoint
+          const response = await fetch("http://127.0.0.1:8000/api/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username,
+              password,
+            }),
+          });
 
-        // Replace this with your actual user authentication logic
-        if (username === "admin" && password === "admin") {
-          return user;
-        } else {
+          // Check if the response is successful
+          if (!response.ok) {
+            throw new Error("Invalid credentials");
+          }
+
+          // Parse the response JSON
+          const user = await response.json();
+
+          // Assuming the API returns a user object on successful login
+          if (user) {
+            return user;
+          } else {
+            return null;
+          }
+        } catch (error) {
+          console.error("Login error:", error);
           return null;
         }
       },
@@ -34,9 +57,9 @@ const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    async jwt({ token, account, user }: any) {
-      // Add username to the token if using the credentials provider
-      if (account?.provider === "credentials" && user) {
+    async jwt({ token, user }: any) {
+      // Add username to the token if user is available
+      if (user) {
         token.id = user.id;
         token.username = user.username;
       }
