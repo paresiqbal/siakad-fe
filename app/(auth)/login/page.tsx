@@ -4,7 +4,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { AppContext } from "@/context/AppContext";
 
 // ex lib
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -56,14 +55,6 @@ export default function Login() {
   const router = useRouter();
   const [error, setError] = useState<Errors>({});
 
-  // Access AppContext
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error("AppContext must be used within an AppProvider");
-  }
-
-  const { token, setToken } = context;
-
   // Handle registration
   async function handleLogin(data: FormData) {
     const res = await fetch("http://127.0.0.1:8000/api/login", {
@@ -81,16 +72,9 @@ export default function Login() {
       setError(result.errors);
     } else {
       localStorage.setItem("token", result.token);
-      setToken(result.token);
       router.push("/");
     }
   }
-
-  useEffect(() => {
-    if (token) {
-      router.push("/");
-    }
-  }, [token, router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">
