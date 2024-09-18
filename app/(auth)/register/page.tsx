@@ -31,11 +31,6 @@ interface FormData {
   password: string;
 }
 
-interface ServerError {
-  username?: string[];
-  password?: string[];
-}
-
 // Form schema
 const formSchema = z.object({
   username: z.string().min(6, {
