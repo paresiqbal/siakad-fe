@@ -1,4 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+
+// context
+import { AppContext } from "@/context/AppContext";
+
+// ui lib
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -20,6 +25,7 @@ import {
   X,
   ChevronDown,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 const menuItems = [
   { icon: Home, label: "Home" },
@@ -37,6 +43,7 @@ const menuItems = [
 ];
 
 export default function Component() {
+  const { user }: any = useContext(AppContext); // Get user from context
   const [isOpen, setIsOpen] = useState(false);
   const [isShrunk, setIsShrunk] = useState(false);
 
@@ -53,6 +60,7 @@ export default function Component() {
           isShrunk={isShrunk}
           setIsShrunk={setIsShrunk}
           isDesktop={true}
+          user={user} // Pass user to SidebarContent
         />
       </aside>
 
@@ -74,6 +82,7 @@ export default function Component() {
             setIsShrunk={() => {}}
             isDesktop={false}
             onClose={() => setIsOpen(false)}
+            user={user} // Pass user to SidebarContent
           />
         </SheetContent>
       </Sheet>
@@ -81,7 +90,13 @@ export default function Component() {
   );
 }
 
-function SidebarContent({ isShrunk, setIsShrunk, isDesktop, onClose }: any) {
+function SidebarContent({
+  isShrunk,
+  setIsShrunk,
+  isDesktop,
+  onClose,
+  user,
+}: any) {
   return (
     <div
       className={cn(
@@ -215,9 +230,9 @@ function SidebarContent({ isShrunk, setIsShrunk, isDesktop, onClose }: any) {
           )}
         >
           <div className="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-600" />
-          {(!isShrunk || !isDesktop) && (
+          {(!isShrunk || !isDesktop) && user && (
             <span className="text-sm font-medium transition-opacity duration-300 ease-in-out">
-              John Doe
+              {user.username} {/* Display username */}
             </span>
           )}
         </div>
@@ -230,7 +245,10 @@ function SidebarContent({ isShrunk, setIsShrunk, isDesktop, onClose }: any) {
         >
           <LogOut className="h-4 w-4 flex-shrink-0" />
           {(!isShrunk || !isDesktop) && (
-            <span className="transition-opacity duration-300 ease-in-out">
+            <span
+              className="transition-opacity duration-300 ease-in-out"
+              onClick={() => signOut()}
+            >
               Logout
             </span>
           )}
